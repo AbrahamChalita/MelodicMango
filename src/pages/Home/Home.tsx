@@ -117,7 +117,16 @@ const Home: React.FC = () => {
   }
 
   function handleSongEnded() {
-    setCurrentSongIndex((prevIndex) => (prevIndex + 1) % playlist.length);
+    const audioPlayer = audioPlayerRef.current;
+    if (audioPlayer) {
+      const nextIndex = (currentSongIndex + 1) % playlist.length;
+      audioPlayer.src = playlist[nextIndex]?.file;
+      audioPlayer.load();
+      audioPlayer.volume = volume;
+      audioPlayer.play();
+      setIsPlaying(true);
+      setCurrentSongIndex(nextIndex);
+    }
   }
 
   function handleNextSong() {
