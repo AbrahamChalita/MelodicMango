@@ -84,11 +84,19 @@ const Home: React.FC = () => {
         audioPlayer.addEventListener("error", handleAudioError);
 
         setIsAudioInitialized(true);
+
+        audioPlayer.muted = true;
+        audioPlayer.play().then(() => {
+          audioPlayer.pause();
+          audioPlayer.muted = false;
+        });
+
       } else {
         if (isPlaying) {
           audioPlayer.pause();
         } else {
           audioPlayer.play();
+          
         }
         setIsPlaying(!isPlaying);
       }
@@ -170,7 +178,7 @@ const Home: React.FC = () => {
         audioPlayerRef.current.removeEventListener("timeupdate", handleTime);
       }
     };
-  }, [currentSongIndex, songTime]);
+  }, [currentSongIndex, songTime, playlist]);
 
   useEffect(() => {
     fetchSongs();
