@@ -18,6 +18,8 @@ import VolumeUp from "@mui/icons-material/VolumeUp";
 import VolumeDown from "@mui/icons-material/VolumeDown";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import SkipNextIcon from '@mui/icons-material/SkipNext';
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 
 const supabaseUrl = "https://dxbolfpjhqnhnwouujcz.supabase.co";
 const supabaseKey = process.env.REACT_APP_SUPABASE_KEY || "";
@@ -90,13 +92,11 @@ const Home: React.FC = () => {
           audioPlayer.pause();
           audioPlayer.muted = false;
         });
-
       } else {
         if (isPlaying) {
           audioPlayer.pause();
         } else {
           audioPlayer.play();
-          
         }
         setIsPlaying(!isPlaying);
       }
@@ -133,11 +133,11 @@ const Home: React.FC = () => {
     const audioPlayer = audioPlayerRef.current;
     const nextIndex = (currentSongIndex + 1) % playlist.length;
     if (audioPlayer) {
-        audioPlayer.src = playlist[nextIndex]?.file;
-        audioPlayer.load();
-        audioPlayer.volume = volume;
-        audioPlayer.play();
-        setIsPlaying(true);
+      audioPlayer.src = playlist[nextIndex]?.file;
+      audioPlayer.load();
+      audioPlayer.volume = volume;
+      audioPlayer.play();
+      setIsPlaying(true);
     }
     setCurrentSongIndex(nextIndex);
   }
@@ -146,15 +146,14 @@ const Home: React.FC = () => {
     const audioPlayer = audioPlayerRef.current;
     const previousIndex = (currentSongIndex - 1) % playlist.length;
     if (audioPlayer) {
-        audioPlayer.src = playlist[previousIndex]?.file;
-        audioPlayer.load();
-        audioPlayer.volume = volume;
-        audioPlayer.play();
-        setIsPlaying(true);
+      audioPlayer.src = playlist[previousIndex]?.file;
+      audioPlayer.load();
+      audioPlayer.volume = volume;
+      audioPlayer.play();
+      setIsPlaying(true);
     }
     setCurrentSongIndex(previousIndex);
   }
-  
 
   function handleVolumeChange(event: any, newValue: number | number[]) {
     const newVolume = typeof newValue === "number" ? newValue : newValue[0];
@@ -165,11 +164,13 @@ const Home: React.FC = () => {
   }
 
   function handleTime() {
-    if (audioPlayerRef.current) {
-      const currentTime = audioPlayerRef.current.currentTime;
+    const currentAudioPlayer = audioPlayerRef.current;
+    if (currentAudioPlayer) {
+      const currentTime = currentAudioPlayer.currentTime;
       setSongTime(currentTime);
     }
   }
+  
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -178,16 +179,19 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
-    if (audioPlayerRef.current) {
-      audioPlayerRef.current.addEventListener("timeupdate", handleTime);
+    const currentAudioPlayer = audioPlayerRef.current;
+  
+    if (currentAudioPlayer) {
+      currentAudioPlayer.addEventListener("timeupdate", handleTime);
     }
-
+  
     return () => {
-      if (audioPlayerRef.current) {
-        audioPlayerRef.current.removeEventListener("timeupdate", handleTime);
+      if (currentAudioPlayer) {
+        currentAudioPlayer.removeEventListener("timeupdate", handleTime);
       }
     };
   }, [currentSongIndex, songTime, playlist]);
+  
 
   useEffect(() => {
     fetchSongs();
@@ -214,7 +218,6 @@ const Home: React.FC = () => {
     "https://miro.medium.com/v2/resize:fit:1000/0*eIhVp0KXrXSSHORN.gif",
     "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/c83c004e-1370-4756-88e5-4071de797088/dfwtrdo-80c5b3ae-615f-4074-9f0e-c772659e4e79.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2M4M2MwMDRlLTEzNzAtNDc1Ni04OGU1LTQwNzFkZTc5NzA4OFwvZGZ3dHJkby04MGM1YjNhZS02MTVmLTQwNzQtOWYwZS1jNzcyNjU5ZTRlNzkuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.3iKkKrjeG6eQFUmlq4I48HZ51hGyHGd_qHBelGyZuRo",
     "https://wallpaperaccess.com/full/8351153.gif",
-    "https://i.pinimg.com/originals/ee/8f/98/ee8f9893298f5d33d7dbc4cb44d30a93.gif",
     "https://wallpaperaccess.com/full/849790.gif",
   ];
 
@@ -256,7 +259,7 @@ const Home: React.FC = () => {
             backdropFilter: "blur(5px)",
             borderRadius: "10px",
             padding: "20px",
-            width: "25%",
+            width: "20%",
             "@media (max-width: 768px)": {
               width: "100%",
               height: "25%",
@@ -265,47 +268,113 @@ const Home: React.FC = () => {
               width: "100%",
               height: "25%",
             },
+            "@media (max-width: 1440px)": {
+                width: "100%",
+                height: "25%",
+                },
           }}
         >
-          <CardContent
+          <Box
             sx={{
               display: "flex",
               flexDirection: "column",
-              justifyContent: "flex-start",
-              alignItems: "flex-start",
+              alignItems: "center",
+              width: "100%",
             }}
           >
-            <Typography
+            <Box
               sx={{
-                fontWeight: "bold",
-                fontFamily: "Trebuchet MS",
-                fontStyle: "normal",
-                fontSize: "1.5rem",
-                color: "#000000",
-                "@media (max-width: 768px)": {
-                  fontSize: "1.5rem",
-                },
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                width: "100%",
+                justifyContent: "center",
               }}
             >
-              {playlist[currentSongIndex].title}
-            </Typography>
-            <Typography
-              sx={{
-                fontFamily: "Trebuchet MS",
-                fontStyle: "normal",
-                fontSize: "1rem",
-                letterSpacing: "0.25px",
-                color: "#000000",
-              }}
-            >
-              {playlist[currentSongIndex].artist}
-            </Typography>
+              <CardContent
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-start",
+                  alignItems: "flex-start",
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontWeight: "bold",
+                    fontFamily: "Trebuchet MS",
+                    fontStyle: "normal",
+                    fontSize: "1.5rem",
+                    color: "#000000",
+                    "@media (max-width: 768px)": {
+                      fontSize: "1.5rem",
+                    },
+                  }}
+                >
+                  {playlist[currentSongIndex].title}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontFamily: "Trebuchet MS",
+                    fontStyle: "normal",
+                    fontSize: "1rem",
+                    letterSpacing: "0.25px",
+                    color: "#000000",
+                  }}
+                >
+                  {playlist[currentSongIndex].artist}
+                </Typography>
+              </CardContent>
+              <Box
+                display="flex"
+                alignItems="center"
+                sx={{
+                  paddingLeft: "2rem",
+                }}
+              >
+                <IconButton onClick={() => handlePreviousSong()}>
+                  <SkipPreviousIcon />
+                </IconButton>
+                {loading ? (
+                  <CircularProgress />
+                ) : (
+                  <IconButton
+                    onClick={togglePlayPause}
+                    disabled={playlist.length === 0}
+                    sx={{
+                      backgroundColor: "rgba(255, 255, 255, 0.6)",
+                      backdropFilter: "blur(5px)",
+                      padding: "20px",
+                    }}
+                  >
+                    {isPlaying ? <PauseIcon /> : <PlayIcon />}
+                  </IconButton>
+                )}
+
+                <IconButton onClick={() => handleNextSong()}>
+                  <SkipNextIcon />
+                </IconButton>
+              </Box>
+              <audio
+                ref={audioPlayerRef}
+                //controls
+                onEnded={handleSongEnded}
+              />
+            </Box>
             <Box
               display="flex"
-              justifyContent="space-between"
+                flexDirection="row"
               alignItems="center"
               width="100%"
               mt={2}
+              sx={{
+                "@media (max-width: 768px)": {
+                    width: "85%",
+                    },
+                "@media (max-width: 1024px)": {
+                    width: "85%",
+                    },
+              }}
             >
               <Box display="flex" alignItems="center">
                 <Typography variant="body2" component="span">
@@ -325,50 +394,7 @@ const Home: React.FC = () => {
                 </Typography>
               </Box>
             </Box>
-          </CardContent>
-          <Box
-            display="flex"
-            alignItems="center"
-            sx={{
-              paddingRight: "0.5rem",
-            }}
-          >
-            <IconButton
-              onClick={() =>
-                handlePreviousSong()
-              }
-            >
-              <NavigateBeforeIcon />
-            </IconButton>
-            {loading ? (
-              <CircularProgress />
-            ) : (
-              <IconButton
-                onClick={togglePlayPause}
-                disabled={playlist.length === 0}
-                sx={{
-                  backgroundColor: "rgba(255, 255, 255, 0.6)",
-                  backdropFilter: "blur(5px)",
-                  padding: "20px",
-                }}
-              >
-                {isPlaying ? <PauseIcon /> : <PlayIcon />}
-              </IconButton>
-            )}
-
-            <IconButton
-              onClick={() =>
-                handleNextSong()
-              }
-            >
-              <NavigateNextIcon />
-            </IconButton>
           </Box>
-          <audio
-            ref={audioPlayerRef}
-            //controls
-            onEnded={handleSongEnded}
-          />
         </Card>
       )}
       <Box
@@ -458,6 +484,17 @@ const Home: React.FC = () => {
           >
             Melodic Mango
           </Typography>
+          <Typography
+            sx={{
+                fontFamily: "Trebuchet MS",
+                fontStyle: "normal",
+                fontSize: "0.75rem",
+                letterSpacing: "0.25px",
+                color: "#FFFFFF",
+                }}
+            >
+            {playlist.length} songs
+            </Typography>
         </Box>
       </Box>
     </Box>
