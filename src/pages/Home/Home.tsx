@@ -260,7 +260,7 @@ const Home: React.FC = () => {
         alignItems="center"
         justifyContent="center"
         width={{ xs: "90%", sm: "70%", md: 350 }}
-        height={{ xs: "40vh", sm: "40vh", md: "40vh" }}
+        height="auto"
         sx={{
             backgroundColor: "rgba(255, 255, 255, 0.9)",
             flexDirection: "column",
@@ -355,7 +355,8 @@ const Home: React.FC = () => {
             sx={{
                 paddingLeft: "1.5rem",
                 paddingRight: "1.5rem",
-                paddingTop: "1.5rem",
+                paddingTop: "0.5rem",
+                paddingBottom: "1rem",
             }}
         >
             <IconButton onClick={() => handlePreviousSong()} sx={{borderRadius: "10%"}}>
@@ -410,7 +411,7 @@ const Home: React.FC = () => {
         alignItems="center"
         width={200}
         sx={{
-          paddingRight: "20px",
+          paddingRight: "0.5rem",
         }}
       >
         <IconButton
