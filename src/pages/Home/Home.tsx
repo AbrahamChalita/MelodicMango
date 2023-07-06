@@ -396,11 +396,6 @@ const Home: React.FC = () => {
                     }}
                 />
             </IconButton>
-            <audio
-                ref={audioPlayerRef}
-                //controls
-                onEnded={handleSongEnded}
-            />
         </Box>
       </Box>
       <Box
@@ -567,6 +562,12 @@ const Home: React.FC = () => {
           </Box>
         </Box>
       </Modal>
+        <audio
+            ref={audioPlayerRef}
+            controls
+            onEnded={handleSongEnded}
+            style={{ display: "none" }}
+        />
     </Box>
   );
 };
