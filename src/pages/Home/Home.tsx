@@ -4,12 +4,10 @@ import {
   Box,
   CircularProgress,
   Typography,
-  Card,
-  CardContent,
   IconButton,
   Slider,
   Stack,
-  LinearProgress,
+  LinearProgress, Modal,
 } from "@mui/material";
 import { Song } from "./types";
 import PlayIcon from "@mui/icons-material/PlayArrow";
@@ -18,6 +16,7 @@ import VolumeUp from "@mui/icons-material/VolumeUp";
 import VolumeDown from "@mui/icons-material/VolumeDown";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import CancelIcon from '@mui/icons-material/Cancel';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 
@@ -35,6 +34,7 @@ const Home: React.FC = () => {
   const [songTime, setSongTime] = useState<number>(0);
   const [currentBackgroundIndex, setCurrentBackgroundIndex] = useState(0);
   const [isAudioInitialized, setIsAudioInitialized] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   async function fetchSongs() {
     try {
@@ -233,10 +233,17 @@ const Home: React.FC = () => {
     );
   }
 
+  const handleSettingsClose = () => {
+    setIsSettingsOpen(false)
+  }
+
+    const handleSettingsOpen = () => {
+    setIsSettingsOpen(true)
+    }
+
   return (
     <Box
       textAlign="center"
-      p={2}
       sx={{
         backgroundImage: `url(${backgrounds[currentBackgroundIndex]})`,
         backgroundSize: "cover",
@@ -248,155 +255,153 @@ const Home: React.FC = () => {
         flexDirection: "column",
       }}
     >
-      {playlist.length > 0 && (
-        <Card
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
+      <Box
+        position="relative"
+        alignItems="center"
+        justifyContent="center"
+        width={{ xs: "90%", sm: "70%", md: 350 }}
+        height={{ xs: "40vh", sm: "40vh", md: "40vh" }}
+        sx={{
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            flexDirection: "column",
+            justifyContent: "center",
             alignItems: "center",
-            backgroundColor: "rgba(255, 255, 255, 0.6)",
-            backdropFilter: "blur(5px)",
-            borderRadius: "10px",
-            padding: "20px",
-            width: "20%",
-            "@media (max-width: 768px)": {
-              width: "100%",
-              height: "25%",
-            },
-            "@media (max-width: 1024px)": {
-              width: "100%",
-              height: "25%",
-            },
-            "@media (max-width: 1440px)": {
-                width: "100%",
-                height: "25%",
-                },
-          }}
+            borderRadius: "20px 20px 20px 20px",
+            boxShadow: "0px 0px 20px 0px rgba(0,0,0,0.75)",
+        }}
         >
-          <Box
+        <Typography
             sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              width: "100%",
+              fontWeight: "bold",
+              fontFamily: "Helvetica, Arial, sans-serif",
+              fontStyle: "normal",
+              fontSize: "1.8rem",
+              color: "#000000",
+              textAlign: "center",
+                marginTop: "3rem",
             }}
-          >
-            <Box
+        >
+          {playlist[currentSongIndex] ? playlist[currentSongIndex].title : ""}
+        </Typography>
+          <Typography
               sx={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                width: "100%",
-                justifyContent: "center",
+                  fontFamily: "Helvetica, Arial, sans-serif",
+                  fontStyle: "normal",
+                  fontSize: "1.2rem",
+                  letterSpacing: "0.25px",
+                  color: "#000000",
               }}
-            >
-              <CardContent
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-start",
-                  alignItems: "flex-start",
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontWeight: "bold",
-                    fontFamily: "Trebuchet MS",
-                    fontStyle: "normal",
-                    fontSize: "1.5rem",
-                    color: "#000000",
-                    "@media (max-width: 768px)": {
-                      fontSize: "1.5rem",
-                    },
+          >
+                {playlist[currentSongIndex] ? playlist[currentSongIndex].artist : ""}
+          </Typography>
+          <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              flexDirection="row"
+              mt={2}
+              sx={{
+                  paddingLeft: "1.5rem",
+                  paddingRight: "1.5rem",
+                  paddingTop: "1rem",
+              }}
+          >
+              <LinearProgress
+                  variant="determinate"
+                  value={(songTime / (playlist[currentSongIndex] ? playlist[currentSongIndex].duration : 100)) * 100}
+                  sx={{ width: "100%",
+                      height: "0.4rem",
+                      borderRadius: "2rem",
+                      backgroundColor: "rgba(0, 0, 0, 0.2)",
                   }}
-                >
-                  {playlist[currentSongIndex].title}
-                </Typography>
-                <Typography
-                  sx={{
-                    fontFamily: "Trebuchet MS",
-                    fontStyle: "normal",
-                    fontSize: "1rem",
-                    letterSpacing: "0.25px",
-                    color: "#000000",
-                  }}
-                >
-                  {playlist[currentSongIndex].artist}
-                </Typography>
-              </CardContent>
-              <Box
+              />
+          </Box>
+            <Box
                 display="flex"
                 alignItems="center"
+                justifyContent="center"
+                flexDirection="row"
+                mt={2}
                 sx={{
-                  paddingLeft: "2rem",
+                    paddingLeft: "1.6rem",
+                    paddingRight: "1.6rem",
                 }}
-              >
-                <IconButton onClick={() => handlePreviousSong()}>
-                  <SkipPreviousIcon />
-                </IconButton>
-                {loading ? (
-                  <CircularProgress />
-                ) : (
-                  <IconButton
+            >
+                <Box display="flex" alignItems="center">
+                    <Typography variant="body2" component="span"
+                        sx={{
+                            fontWeight: "bold",
+                        }}
+                    >
+                        {formatTime(songTime)}
+                    </Typography>
+                </Box>
+                <Box sx={{ flexGrow: 1 }} />
+                <Box display="flex" alignItems="center">
+                    <Typography variant="body2" component="span"
+                        sx={{
+                            fontWeight: "bold",
+                        }}
+                    >
+                        {formatTime((playlist[currentSongIndex] ? playlist[currentSongIndex].duration : 100))}
+                    </Typography>
+                </Box>
+            </Box>
+        <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            flexDirection="row"
+            sx={{
+                paddingLeft: "1.5rem",
+                paddingRight: "1.5rem",
+                paddingTop: "1.5rem",
+            }}
+        >
+            <IconButton onClick={() => handlePreviousSong()} sx={{borderRadius: "10%"}}>
+                <SkipPreviousIcon
+                    sx={{
+                        color: "#000000",
+                        paddingRight: "1rem",
+                    }}
+                />
+            </IconButton>
+            {loading ? (
+                <CircularProgress />
+            ) : (
+                <IconButton
                     onClick={togglePlayPause}
                     disabled={playlist.length === 0}
                     sx={{
-                      backgroundColor: "rgba(255, 255, 255, 0.6)",
-                      backdropFilter: "blur(5px)",
-                      padding: "20px",
+                        backgroundColor: "rgba(0, 0, 0, 0.9)",
+                        borderRadius: "10%",
+                        backdropFilter: "blur(5px)",
+                        padding: "20px",
                     }}
-                  >
-                    {isPlaying ? <PauseIcon /> : <PlayIcon />}
-                  </IconButton>
-                )}
-
-                <IconButton onClick={() => handleNextSong()}>
-                  <SkipNextIcon />
+                >
+                    {isPlaying ?
+                        <PauseIcon sx={{ color: "white"}}/>
+                        :
+                        <PlayIcon sx={{ color: "white"}}/>}
                 </IconButton>
-              </Box>
-              <audio
+            )}
+
+            <IconButton onClick={() => handleNextSong()} sx={{borderRadius: "10%"}}>
+                <SkipNextIcon
+                    sx={{
+                        color: "#000000",
+                        paddingLeft: "1rem",
+
+                    }}
+                />
+            </IconButton>
+            <audio
                 ref={audioPlayerRef}
                 //controls
                 onEnded={handleSongEnded}
-              />
-            </Box>
-            <Box
-              display="flex"
-                flexDirection="row"
-              alignItems="center"
-              width="100%"
-              mt={2}
-              sx={{
-                "@media (max-width: 768px)": {
-                    width: "85%",
-                    },
-                "@media (max-width: 1024px)": {
-                    width: "85%",
-                    },
-              }}
-            >
-              <Box display="flex" alignItems="center">
-                <Typography variant="body2" component="span">
-                  {formatTime(songTime)}
-                </Typography>
-              </Box>
-              <Box sx={{ flexGrow: 1, ml: 2, mr: 2 }}>
-                <LinearProgress
-                  variant="determinate"
-                  value={(songTime / playlist[currentSongIndex].duration) * 100}
-                  sx={{ width: "100%" }}
-                />
-              </Box>
-              <Box display="flex" alignItems="center">
-                <Typography variant="body2" component="span">
-                  {formatTime(playlist[currentSongIndex].duration)}
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-        </Card>
-      )}
+            />
+        </Box>
+      </Box>
       <Box
         position="fixed"
         top={30}
@@ -408,33 +413,16 @@ const Home: React.FC = () => {
           paddingRight: "20px",
         }}
       >
-        <Stack
-          spacing={2}
-          direction="column"
+        <IconButton
           sx={{
             mb: 1,
             alignItems: "center",
             marginLeft: "auto",
           }}
-          alignItems="center"
+          onClick={handleSettingsOpen}
         >
-          <IconButton>
-            <VolumeUp sx={{ color: "white" }} />
-          </IconButton>
-          <Slider
-            aria-label="Volume"
-            value={volume}
-            onChange={handleVolumeChange}
-            min={0}
-            max={1}
-            step={0.01}
-            sx={{ height: 100, color: "white" }}
-            orientation="vertical"
-          />
-          <IconButton>
-            <VolumeDown sx={{ color: "white" }} />
-          </IconButton>
-        </Stack>
+          <VolumeUp sx={{ color: "white" }} />
+        </IconButton>
       </Box>
       <Box
         position="absolute"
@@ -497,6 +485,87 @@ const Home: React.FC = () => {
             </Typography>
         </Box>
       </Box>
+      <Modal open={isSettingsOpen} onClose={handleSettingsClose}>
+        <Box
+            sx={{
+              backgroundSize: "cover",
+              height: "100vh",
+              width: "100vw",
+              justifyContent: "center",
+              alignItems: "center",
+              display: "flex",
+              flexDirection: "column",
+              backgroundColor: "rgba(0, 0, 0, 0.8)",
+            }}
+        >
+
+          <Box
+              position="relative"
+              alignItems="center"
+              justifyContent="center"
+              width={{ xs: "90%", sm: "70%", md: 350 }}
+              height={{ xs: "20vh", sm: "20vh", md: "20vh" }}
+              sx={{
+                backgroundColor: "transparent",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+          >
+            <Stack
+              spacing={2}
+              direction="row"
+              alignItems="center"
+              sx={{
+                mb: 1,
+                position: "absolute",
+                width: "100%",
+                top: "50%",
+                transform: "translateY(-50%)",
+              }}
+            >
+              <IconButton>
+                <VolumeDown sx={{ color: "white" }} />
+              </IconButton>
+              <Slider
+                aria-label="Volume"
+                value={volume}
+                onChange={handleVolumeChange}
+                min={0}
+                max={1}
+                step={0.01}
+                sx={{ height: 15, color: "white" }}
+                orientation="horizontal"
+              />
+              <IconButton>
+                <VolumeUp sx={{ color: "white" }} />
+              </IconButton>
+            </Stack>
+            <Box
+                position="fixed"
+                top={30}
+                right={10}
+                display="flex"
+                alignItems="center"
+                width={200}
+                sx={{
+                  paddingRight: "20px",
+                }}
+            >
+              <IconButton
+                  sx={{
+                    mb: 1,
+                    alignItems: "center",
+                    marginLeft: "auto",
+                  }}
+                  onClick={handleSettingsClose}
+              >
+                <CancelIcon sx={{ color: "white" }} />
+              </IconButton>
+            </Box>
+          </Box>
+        </Box>
+      </Modal>
     </Box>
   );
 };
